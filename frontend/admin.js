@@ -125,12 +125,46 @@ function renderAiAnalysis(lead) {
             </div>
         `;
 
+    const aiStatusLabels = {
+        pending: "Обработка",
+        completed: "Выполнен",
+        failed: "Ошибка",
+    };
+
+    const aiStatusLabel =
+        aiStatusLabels[lead.ai_status] ||
+        "Неизвестно";
+
     return `
         <div class="ai-analysis">
 
-            <div class="ai-title">
-                AI-анализ
+            <div class="ai-title-row">
+
+                <div class="ai-title">
+                    AI-анализ
+                </div>
+
+                <span
+                    class="ai-status ai-status-${escapeHtml(
+                        lead.ai_status
+                    )}"
+                >
+                    AI: ${escapeHtml(aiStatusLabel)}
+                </span>
+
             </div>
+
+            ${
+                lead.ai_status === "failed"
+                    ? `
+                        <div class="ai-error">
+                            AI-анализ не выполнен.
+                            Заявка сохранена и доступна
+                            для обработки.
+                        </div>
+                    `
+                    : ""
+            }
 
             <div class="ai-grid">
 

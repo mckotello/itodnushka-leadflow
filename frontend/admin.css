@@ -499,3 +499,76 @@ button {
     }
 
 }
+.ai-title-row {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 16px;
+
+    margin-bottom: 18px;
+}
+
+
+.ai-status {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 6px 10px;
+
+    border: 2px solid #171717;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+.ai-status-completed {
+    background: #c8ff00;
+}
+
+
+.ai-status-pending {
+    background: #ffd84d;
+}
+
+
+.ai-status-failed {
+    background: #ff4fa3;
+
+    color: #171717;
+}
+
+
+.ai-error {
+    margin-bottom: 18px;
+
+    padding: 12px 14px;
+
+    border: 2px solid #171717;
+
+    border-radius: 10px;
+
+    background: #ff4fa3;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+@media (max-width: 600px) {
+    .ai-title-row {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+}

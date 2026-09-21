@@ -193,19 +193,50 @@ function renderLead(lead) {
 
             <div class="ai-analysis">
 
-                <div class="ai-title">
-                    AI-анализ
+                <div class="ai-title-row">
+            
+                    <div class="ai-title">
+                        AI-анализ
+                    </div>
+            
+                    <span
+                        class="ai-status ai-status-${escapeHtml(
+                            lead.ai_status
+                        )}"
+                    >
+                        ${
+                            lead.ai_status === "completed"
+                                ? "AI: Выполнен"
+                                : lead.ai_status === "failed"
+                                    ? "AI: Ошибка"
+                                    : "AI: Обработка"
+                        }
+                    </span>
+            
                 </div>
-
-
+            
+            
+                ${
+                    lead.ai_status === "failed"
+                        ? `
+                            <div class="ai-error">
+                                AI-анализ не выполнен.
+                                Заявка сохранена и доступна
+                                для обработки.
+                            </div>
+                        `
+                        : ""
+                }
+            
+            
                 <div class="ai-grid">
-
+            
                     <div class="ai-item">
-
+            
                         <span class="ai-label">
                             Категория
                         </span>
-
+            
                         <strong>
                             ${escapeHtml(
                                 getCategoryLabel(
@@ -213,16 +244,16 @@ function renderLead(lead) {
                                 )
                             )}
                         </strong>
-
+            
                     </div>
-
-
+            
+            
                     <div class="ai-item">
-
+            
                         <span class="ai-label">
                             Приоритет
                         </span>
-
+            
                         <strong
                             class="ai-priority ai-priority-${escapeHtml(
                                 lead.ai_priority
@@ -234,40 +265,40 @@ function renderLead(lead) {
                                 )
                             )}
                         </strong>
-
+            
                     </div>
-
-
+            
+            
                     <div class="ai-item">
-
+            
                         <span class="ai-label">
                             Сложность
                         </span>
-
+            
                         <strong>
                             ${escapeHtml(
                                 lead.ai_estimate ||
                                 "Не определена"
                             )}
                         </strong>
-
+            
                     </div>
-
+            
                 </div>
-
-
+            
+            
                 <div class="ai-functions">
-
+            
                     <span class="ai-label">
                         Выявленные функции
                     </span>
-
+            
                     <div class="ai-features">
                         ${featuresHtml}
                     </div>
-
+            
                 </div>
-
+            
             </div>
 
 
