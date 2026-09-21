@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LeadFlow — заявки</title>
+
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+<header class="header">
+    <div>
+        <div class="logo">ITоднушка LeadFlow</div>
+        <div class="subtitle">Управление заявками</div>
+    </div>
+
+    <a href="index.html">Новая заявка</a>
+</header>
+
+
+<main class="container">
+
+    <div class="page-header">
+        <div>
+            <h1>Заявки</h1>
+            <p>Все входящие обращения клиентов</p>
+        </div>
+
+        <button onclick="loadLeads()">
+            Обновить
+        </button>
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat">
+            <span>Всего</span>
+            <strong id="total-count">0</strong>
+        </div>
+
+        <div class="stat">
+            <span>Новые</span>
+            <strong id="new-count">0</strong>
+        </div>
+
+        <div class="stat">
+            <span>В работе</span>
+            <strong id="in-progress-count">0</strong>
+        </div>
+
+        <div class="stat">
+            <span>Завершено</span>
+            <strong id="done-count">0</strong>
+        </div>
+
+    </div>
+
+    <div class="filters">
+
+        <input
+            type="text"
+            id="search-input"
+            placeholder="Поиск по клиенту, компании или заявке..."
+        >
+
+        <select id="status-filter">
+            <option value="all">Все статусы</option>
+            <option value="new">Новые</option>
+            <option value="in_progress">В работе</option>
+            <option value="done">Завершённые</option>
+            <option value="cancelled">Отменённые</option>
+        </select>
+
+        <select id="priority-filter">
+            <option value="all">Любой приоритет</option>
+            <option value="high">Высокий</option>
+            <option value="medium">Средний</option>
+            <option value="low">Низкий</option>
+        </select>
+        <button
+            type="button"
+            id="reset-filters"
+        >
+            Сбросить
+        </button>
+    </div>
+    <section id="leads-list" class="leads"></section>
+
+</main>
+
+
+<script src="admin.js"></script>
+
+</body>
+</html>

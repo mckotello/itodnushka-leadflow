@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LeadFlow — заявка</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<main class="container">
+
+    <section class="card">
+
+        <div class="badge">
+            ITоднушка LeadFlow
+        </div>
+
+        <h1>
+            Расскажите,<br>
+            что нужно сделать
+        </h1>
+
+        <p class="subtitle">
+            Оставьте заявку — мы разберём задачу и свяжемся с вами.
+        </p>
+
+        <form id="leadForm">
+
+            <label>
+                Имя
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Анна"
+                    required
+                >
+            </label>
+
+            <label>
+                Компания
+                <input
+                    type="text"
+                    name="company"
+                    placeholder="ООО «Ромашка»"
+                >
+            </label>
+
+            <label>
+                Telegram или телефон
+                <input
+                    type="text"
+                    name="contact"
+                    placeholder="@username или +7..."
+                    required
+                >
+            </label>
+
+            <label>
+                Что нужно сделать?
+                <textarea
+                    name="message"
+                    placeholder="Например: нужен сайт с личным кабинетом..."
+                    required
+                ></textarea>
+            </label>
+
+            <label>
+                Бюджет
+                <input
+                    type="text"
+                    name="budget"
+                    placeholder="150 000–250 000 ₽"
+                >
+            </label>
+
+            <button type="submit">
+                Отправить заявку
+            </button>
+
+        </form>
+
+        <div id="result" class="result"></div>
+
+    </section>
+
+</main>
+
+<script src="app.js"></script>
+
+</body>
+</html>
