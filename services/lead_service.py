@@ -16,7 +16,7 @@ def create_lead(
     budget: str | None,
 ) -> Lead:
 
-    # 1. Сначала создаём заявку без AI-анализа.
+    # 1. Сначала сохраняем заявку.
     lead = Lead(
         name=name,
         company=company,
@@ -24,13 +24,14 @@ def create_lead(
         message=message,
         budget=budget,
         status="new",
+        ai_status="pending",
     )
 
     db.add(lead)
     db.commit()
     db.refresh(lead)
 
-    # 2. Пытаемся выполнить AI-анализ.
+    # 2. Выполняем AI-анализ.
     analysis = None
 
     try:
@@ -46,11 +47,17 @@ def create_lead(
             ensure_ascii=False,
         )
         lead.ai_estimate = analysis.estimate
+        lead.ai_status = "completed"
 
         db.commit()
         db.refresh(lead)
 
     except Exception as error:
+        lead.ai_status = "failed"
+
+        db.commit()
+        db.refresh(lead)
+
         print(
             f"Ошибка AI-анализа заявки #{lead.id}: {error}"
         )
@@ -88,6 +95,7 @@ def create_lead(
         )
 
         ai_block = (
+            f"Статус AI: выполнен\n\n"
             f"Категория: {category}\n"
             f"Приоритет: {priority}\n"
             f"Сложность: {analysis.estimate}\n\n"
@@ -97,7 +105,7 @@ def create_lead(
 
     else:
         ai_block = (
-            "AI-анализ\n\n"
+            "Статус AI: ошибка\n\n"
             "AI временно недоступен.\n"
             "Заявка сохранена без AI-анализа."
         )
@@ -115,9 +123,11 @@ def create_lead(
         f"{ai_block}"
     )
 
-    # 4. Ошибка Telegram тоже не должна ломать создание заявки.
+    # 4. Telegram не должен ломать создание заявки.
     try:
-        send_telegram_message(telegram_message)
+        send_telegram_message(
+            telegram_message
+        )
 
     except Exception as error:
         print(

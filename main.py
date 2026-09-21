@@ -83,7 +83,7 @@ class LeadResponse(BaseModel):
     message: str
     budget: str | None
     status: LeadStatus
-
+    ai_status: str
     ai_category: str | None
     ai_priority: str | None
     ai_features: str | None

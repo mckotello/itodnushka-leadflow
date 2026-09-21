@@ -16,13 +16,23 @@ class Lead(Base):
         default=datetime.utcnow,
     )
 
-    name: Mapped[str] = mapped_column(String(100))
+    name: Mapped[str] = mapped_column(
+        String(100)
+    )
+
     company: Mapped[str | None] = mapped_column(
         String(200),
         nullable=True,
     )
-    contact: Mapped[str] = mapped_column(String(200))
-    message: Mapped[str] = mapped_column(Text)
+
+    contact: Mapped[str] = mapped_column(
+        String(200)
+    )
+
+    message: Mapped[str] = mapped_column(
+        Text
+    )
+
     budget: Mapped[str | None] = mapped_column(
         String(100),
         nullable=True,
@@ -33,7 +43,11 @@ class Lead(Base):
         default="new",
     )
 
-    # AI-анализ
+    ai_status: Mapped[str] = mapped_column(
+        String(50),
+        default="pending",
+    )
+
     ai_category: Mapped[str | None] = mapped_column(
         String(100),
         nullable=True,
