@@ -312,7 +312,7 @@ function renderLead(lead) {
                 >
                     Новая
                 </button>
-
+            
                 <button
                     onclick="updateStatus(
                         ${lead.id},
@@ -321,7 +321,7 @@ function renderLead(lead) {
                 >
                     В работу
                 </button>
-
+            
                 <button
                     onclick="updateStatus(
                         ${lead.id},
@@ -330,7 +330,7 @@ function renderLead(lead) {
                 >
                     Завершить
                 </button>
-
+            
                 <button
                     onclick="updateStatus(
                         ${lead.id},
@@ -339,7 +339,22 @@ function renderLead(lead) {
                 >
                     Отменить
                 </button>
-
+            
+                ${
+                    lead.ai_status === "failed"
+                        ? `
+                            <button
+                                class="button-ai-retry"
+                                onclick="retryAiAnalysis(
+                                    ${lead.id}
+                                )"
+                            >
+                                Повторить AI-анализ
+                            </button>
+                        `
+                        : ""
+                }
+            
             </div>
 
         </div>
@@ -441,6 +456,35 @@ async function updateStatus(
         );
     }
 }
+async function retryAiAnalysis(
+    leadId
+) {
+    try {
+        const response = await fetch(
+            `${API_URL}/leads/${leadId}/analyze`,
+            {
+                method: "POST",
+            }
+        );
 
+        if (!response.ok) {
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+        }
+
+        await loadLead();
+
+    } catch (error) {
+        console.error(
+            "Ошибка повторного AI-анализа:",
+            error
+        );
+
+        alert(
+            "Не удалось повторить AI-анализ заявки."
+        );
+    }
+}
 
 loadLead();

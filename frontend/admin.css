@@ -572,3 +572,7 @@ button {
         flex-direction: column;
     }
 }
+.button-ai-retry {
+    background: #c8ff00;
+    font-weight: 700;
+}

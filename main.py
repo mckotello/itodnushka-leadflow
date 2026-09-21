@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from database import Base, SessionLocal, engine
 from services.lead_service import (
+    analyze_lead_for_lead,
     create_lead,
     get_lead,
     get_leads,
@@ -160,7 +161,28 @@ def get_lead_endpoint(
 
     return lead
 
+@app.post(
+    "/leads/{lead_id}/analyze",
+    response_model=LeadResponse,
+)
+def analyze_lead_endpoint(
+    lead_id: int,
+    db: Session = Depends(get_db),
+):
+    lead = get_lead(db, lead_id)
 
+    if lead is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Заявка не найдена",
+        )
+
+    analyze_lead_for_lead(
+        db=db,
+        lead=lead,
+    )
+
+    return lead
 @app.patch(
     "/leads/{lead_id}/status",
     response_model=LeadResponse,

@@ -16,7 +16,6 @@ def create_lead(
     budget: str | None,
 ) -> Lead:
 
-    # 1. Сначала сохраняем заявку.
     lead = Lead(
         name=name,
         company=company,
@@ -31,13 +30,37 @@ def create_lead(
     db.commit()
     db.refresh(lead)
 
-    # 2. Выполняем AI-анализ.
-    analysis = None
+    analyze_lead_for_lead(
+        db=db,
+        lead=lead,
+    )
+
+    send_lead_telegram_notification(lead)
+
+    return lead
+
+
+def analyze_lead_for_lead(
+    db: Session,
+    lead: Lead,
+) -> bool:
+    """
+    Выполняет AI-анализ существующей заявки.
+
+    Возвращает:
+    True — анализ успешно выполнен.
+    False — произошла ошибка.
+    """
+
+    lead.ai_status = "pending"
+
+    db.commit()
+    db.refresh(lead)
 
     try:
         analysis = analyze_lead(
-            message=message,
-            budget=budget,
+            message=lead.message,
+            budget=lead.budget,
         )
 
         lead.ai_category = analysis.category
@@ -52,6 +75,8 @@ def create_lead(
         db.commit()
         db.refresh(lead)
 
+        return True
+
     except Exception as error:
         lead.ai_status = "failed"
 
@@ -62,11 +87,22 @@ def create_lead(
             f"Ошибка AI-анализа заявки #{lead.id}: {error}"
         )
 
-    # 3. Формируем Telegram-уведомление.
-    if analysis:
-        features = "\n".join(
+        return False
+
+
+def send_lead_telegram_notification(
+    lead: Lead,
+) -> None:
+
+    if lead.ai_status == "completed":
+
+        features = json.loads(
+            lead.ai_features or "[]"
+        )
+
+        features_text = "\n".join(
             f"• {feature}"
-            for feature in analysis.features
+            for feature in features
         )
 
         category_labels = {
@@ -85,29 +121,36 @@ def create_lead(
         }
 
         category = category_labels.get(
-            analysis.category,
-            analysis.category,
+            lead.ai_category,
+            lead.ai_category,
         )
 
         priority = priority_labels.get(
-            analysis.priority,
-            analysis.priority,
+            lead.ai_priority,
+            lead.ai_priority,
         )
 
         ai_block = (
             f"Статус AI: выполнен\n\n"
             f"Категория: {category}\n"
             f"Приоритет: {priority}\n"
-            f"Сложность: {analysis.estimate}\n\n"
+            f"Сложность: {lead.ai_estimate}\n\n"
             f"Функции:\n"
-            f"{features or '• не определены'}"
+            f"{features_text or '• не определены'}"
+        )
+
+    elif lead.ai_status == "failed":
+
+        ai_block = (
+            "Статус AI: ошибка\n\n"
+            "AI-анализ не выполнен.\n"
+            "Заявка сохранена."
         )
 
     else:
+
         ai_block = (
-            "Статус AI: ошибка\n\n"
-            "AI временно недоступен.\n"
-            "Заявка сохранена без AI-анализа."
+            "Статус AI: обработка"
         )
 
     telegram_message = (
@@ -123,7 +166,6 @@ def create_lead(
         f"{ai_block}"
     )
 
-    # 4. Telegram не должен ломать создание заявки.
     try:
         send_telegram_message(
             telegram_message
@@ -134,8 +176,6 @@ def create_lead(
             f"Ошибка отправки Telegram-уведомления "
             f"для заявки #{lead.id}: {error}"
         )
-
-    return lead
 
 
 def get_leads(db: Session) -> list[Lead]:
@@ -158,6 +198,7 @@ def update_status(
     lead: Lead,
     status: str,
 ) -> Lead:
+
     lead.status = status
 
     db.commit()
