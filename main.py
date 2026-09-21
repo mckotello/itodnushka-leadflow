@@ -3,7 +3,7 @@ from enum import Enum
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
 from database import Base, SessionLocal, engine
@@ -42,11 +42,30 @@ class LeadStatus(str, Enum):
 
 
 class LeadCreate(BaseModel):
-    name: str
-    company: str | None = None
-    contact: str
-    message: str
-    budget: str | None = None
+    name: str = Field(
+        min_length=2,
+        max_length=100,
+    )
+
+    company: str | None = Field(
+        default=None,
+        max_length=200,
+    )
+
+    contact: str = Field(
+        min_length=3,
+        max_length=200,
+    )
+
+    message: str = Field(
+        min_length=10,
+        max_length=5000,
+    )
+
+    budget: str | None = Field(
+        default=None,
+        max_length=100,
+    )
 
 
 class LeadStatusUpdate(BaseModel):
@@ -71,7 +90,6 @@ class LeadResponse(BaseModel):
     ai_estimate: str | None
 
 
-
 def get_db():
     db = SessionLocal()
 
@@ -91,10 +109,15 @@ def root():
 
 @app.get("/health")
 def health():
-    return {"status": "healthy"}
+    return {
+        "status": "healthy",
+    }
 
 
-@app.post("/leads", response_model=LeadResponse)
+@app.post(
+    "/leads",
+    response_model=LeadResponse,
+)
 def create_lead_endpoint(
     lead_data: LeadCreate,
     db: Session = Depends(get_db),
@@ -109,14 +132,20 @@ def create_lead_endpoint(
     )
 
 
-@app.get("/leads", response_model=list[LeadResponse])
+@app.get(
+    "/leads",
+    response_model=list[LeadResponse],
+)
 def get_leads_endpoint(
     db: Session = Depends(get_db),
 ):
     return get_leads(db)
 
 
-@app.get("/leads/{lead_id}", response_model=LeadResponse)
+@app.get(
+    "/leads/{lead_id}",
+    response_model=LeadResponse,
+)
 def get_lead_endpoint(
     lead_id: int,
     db: Session = Depends(get_db),
@@ -132,7 +161,10 @@ def get_lead_endpoint(
     return lead
 
 
-@app.patch("/leads/{lead_id}/status", response_model=LeadResponse)
+@app.patch(
+    "/leads/{lead_id}/status",
+    response_model=LeadResponse,
+)
 def update_lead_status(
     lead_id: int,
     status_data: LeadStatusUpdate,
